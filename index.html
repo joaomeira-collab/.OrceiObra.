@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OrceiObras - Planeje • Calcule • Orce</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --brand-orange: #FF5500;
+      --brand-orange-light: #FF7700;
+      --brand-orange-gradient: linear-gradient(135deg, #FF7700 0%, #FF3A00 100%);
+      --brand-navy: #0B1325;
+      --brand-navy-light: #162238;
+      --brand-navy-card: #1A2744;
+      --surface-white: #FFFFFF;
+      --bg-body: #F4F6F9;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border-color: #E2E8F0;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-md: 0 8px 20px rgba(11,19,37,0.06);
+      --shadow-lg: 0 15px 35px rgba(11,19,37,0.12);
+      --calc-screen-bg: #070D18;
+      --calc-neon-green: #00FF88;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; }
+
+    /* BARRA SUPERIOR MOBILE (HAMBURGUER) */
+    .mobile-header {
+      display: none;
+      height: 60px;
+      background-color: var(--brand-navy);
+      color: white;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      z-index: 20;
+    }
+
+    .btn-toggle-sidebar {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* LAYOUT BASE */
+    .app-layout { display: flex; height: 100vh; width: 100vw; position: relative; }
+    
+    .sidebar { 
+      width: 280px; 
+      background-color: var(--brand-navy); 
+      color: white; 
+      padding: 2rem 1.25rem; 
+      display: flex; 
+      flex-direction: column; 
+      flex-shrink: 0;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+      z-index: 30;
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-header { 
+      padding-bottom: 1.5rem; 
+      border-bottom: 1px solid rgba(255,255,255,0.08); 
+      margin-bottom: 1.5rem; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .brand-logo-svg { 
+      width: 100%; 
+      max-width: 210px; 
+      height: auto; 
+      display: block;
+    }
+
+    .sidebar nav a { 
+      color: #94A3B8; 
+      text-decoration: none; 
+      padding: 0.85rem 1rem; 
+      border-radius: var(--radius-md); 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      margin-bottom: 0.4rem; 
+      font-weight: 600; 
+      font-size: 0.92rem;
+      transition: all 0.25s ease; 
+    }
+    .sidebar nav a:hover { background-color: rgba(255, 255, 255, 0.05); color: white; transform: translateX(3px); }
+    .sidebar nav a.active { 
+      color: white; 
+      background: var(--brand-orange-gradient); 
+      box-shadow: 0 4px 15px rgba(255, 85, 0, 0.35); 
+    }
+
+    .user-info { 
+      margin-top: auto; 
+      padding: 1rem; 
+      background: var(--brand-navy-light);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem; 
+      color: #94A3B8; 
+    }
+    
+    .main-viewport { flex: 1; padding: 2.5rem; overflow-y: auto; background-color: var(--bg-body); }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .page-header h2 { font-size: 1.6rem; font-weight: 800; color: var(--brand-navy); letter-spacing: -0.5px; }
+
+    .sub-page { display: none; }
+    .sub-page.active { display: block; animation: fadeIn 0.3s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* BOTÕES E ELEMENTOS INTERATIVOS */
+    .btn { 
+      padding: 0.75rem 1.4rem; 
+      border-radius: var(--radius-md); 
+      border: none; 
+      font-weight: 700; 
+      font-size: 0.9rem; 
+      cursor: pointer; 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px; 
+      text-decoration: none; 
+      transition: all 0.2s ease; 
+    }
+    .btn-primary { background: var(--brand-orange-gradient); color: white; box-shadow: 0 4px 12px rgba(255, 85, 0, 0.25); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255, 85, 0, 0.35); }
+    .btn-secondary { background: var(--brand-navy); color: white; }
+    .btn-secondary:hover { background: var(--brand-navy-light); transform: translateY(-2px); }
+    .btn-outline { border: 2px solid var(--border-color); background: white; color: var(--text-main); }
+    .btn-outline:hover { border-color: var(--brand-navy); background: white; }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--brand-navy); }
+    .form-control { 
+      width: 100%; 
+      padding: 0.75rem 1rem; 
+      border: 1.5px solid var(--border-color); 
+      border-radius: var(--radius-md); 
+      font-size: 0.95rem; 
+      background: white; 
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus { border-color: var(--brand-orange); box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.1); }
+
+    /* BADGES E PREÇOS */
+    .badge-margin { display: inline-block; background-color: #FFF3EB; color: #D94600; border: 1px solid #FFD0B8; font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .badge-custom { display: inline-block; background-color: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .badge-store { display: inline-block; background-color: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+
+    .input-price {
+      width: 90px;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      color: var(--brand-navy);
+      text-align: right;
+    }
+
+    /* AUTHENTICATION TELA COMPLETA */
+    .auth-wrapper { 
+      min-height: 100vh; 
+      width: 100vw; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      background: linear-gradient(135deg, var(--brand-navy) 0%, #050B14 100%); 
+      position: relative;
+      padding: 1.5rem;
+    }
+    .auth-card { 
+      width: 100%; 
+      max-width: 440px; 
+      background: white; 
+      border-radius: var(--radius-lg); 
+      padding: 2.5rem 1.75rem; 
+      box-shadow: var(--shadow-lg); 
+    }
+
+    /* VITRINE / CARDS */
+    .store-banner { height: 200px; border-radius: var(--radius-lg); background-size: cover; background-position: center; position: relative; margin-bottom: 4.5rem; background-color: #CBD5E1; box-shadow: var(--shadow-md); }
+    .store-avatar { width: 110px; height: 110px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -40px; left: 30px; object-fit: cover; background: white; box-shadow: var(--shadow-md); }
+    .store-header-info { margin-left: 160px; padding-top: 0.5rem; }
+
+    .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .card-item { background: white; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-color); transition: all 0.25s ease; box-shadow: var(--shadow-sm); cursor: pointer; }
+    .card-item:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: rgba(255, 85, 0, 0.3); }
+    .card-item img { width: 100%; height: 160px; object-fit: cover; }
+    .card-item-body { padding: 1.25rem; }
+
+    /* CALCULADORA AVANÇADA HARDWARE STYLE */
+    .calculator-device { background: var(--brand-navy); border-radius: 24px; padding: 2rem; max-width: 950px; margin: 0 auto; box-shadow: var(--shadow-lg); border: 2px solid var(--brand-navy-card); }
+    .calc-screen { background: var(--calc-screen-bg); border-radius: 16px; padding: 1.5rem; color: var(--calc-neon-green); font-family: 'Courier New', monospace; border: 1px solid rgba(0, 255, 136, 0.3); box-shadow: inset 0 0 20px rgba(0,255,136,0.08); margin-bottom: 1.5rem; }
+    .calc-screen-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748B; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 1rem; letter-spacing: 1px; }
+    .calc-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; background: var(--brand-navy-light); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; }
+    .calc-controls label { color: #94A3B8; font-size: 0.8rem; }
+    .calc-controls input, .calc-controls select { background: #0F172A; border: 1px solid #334155; color: white; }
+
+    .calc-keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+    .calc-btn { background: #1E293B; color: white; border: 1px solid #334155; padding: 1rem; border-radius: var(--radius-md); font-weight: bold; font-size: 1.05rem; cursor: pointer; transition: all 0.15s; }
+    .calc-btn:hover { background: #334155; }
+    .calc-btn:active { transform: scale(0.97); }
+    .calc-btn.action { background: var(--brand-orange-gradient); border: none; }
+
+    /* CARDS DA CALCULADORA RÁPIDA */
+    .quick-calc-card { background: white; border-radius: var(--radius-lg); padding: 1.75rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
+    .quick-calc-grid { display: grid; grid-template-columns: 380px 1fr; gap: 2rem; align-items: start; }
+
+    /* TABELAS RESPONSIVAS */
+    .table-container { background: white; border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; min-width: 650px; }
+    th, td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    th { background-color: #F8FAFC; color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+    
+    .btn-remove { background: #FEE2E2; color: #DC2626; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
+    .btn-remove:hover { background: #FCA5A5; }
+
+    .hw-custom-inputs { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr auto; gap: 8px; }
+
+    /* SHADOW OVERLAY PARA SIDEBAR MOBILE */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 25;
+    }
+
+    /* MEDIA QUERIES (SMARTPHONES E TABLETS) */
+    @media (max-width: 992px) {
+      body { overflow: auto; }
+      .app-layout { flex-direction: column; height: auto; min-height: 100vh; }
+      .mobile-header { display: flex; }
+
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; height: 100vh;
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay.active {
+        display: block;
+      }
+
+      .main-viewport { padding: 1.25rem; }
+      .quick-calc-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+      .calculator-device { padding: 1.25rem; border-radius: 16px; }
+      .hw-custom-inputs { grid-template-columns: 1fr 1fr; }
+      .calc-keypad { grid-template-columns: repeat(2, 1fr); }
+      .store-header-info { margin-left: 0; margin-top: 50px; text-align: center; }
+      .store-avatar { left: 50%; transform: translateX(-50%); }
+    }
+
+    @media (max-width: 576px) {
+      .hw-custom-inputs { grid-template-columns: 1fr; }
+      .page-header h2 { font-size: 1.3rem; }
+      .page-header input { width: 100% !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUTENTICAÇÃO -->
+  <div id="view-login" class="sub-page active">
+    <div class="auth-wrapper">
+      <div class="auth-card">
+        <div style="text-align: center; margin-bottom: 2rem; display: flex; justify-content: center;">
+          <svg class="brand-logo-svg" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg" style="max-width:240px;">
+            <defs>
+              <linearGradient id="logoGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FF7700"/>
+                <stop offset="100%" stop-color="#FF3A00"/>
+              </linearGradient>
+            </defs>
+            <rect x="5" y="15" width="48" height="48" rx="10" fill="url(#logoGlow)"/>
+            <path d="M29 23 L41 35 L29 47 L17 35 Z" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+            <circle cx="29" cy="35" r="3" fill="#FFFFFF"/>
+            <text x="64" y="44" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="30" fill="#0B1325" letter-spacing="-1">Orcei<tspan fill="#FF5500">Obras</tspan></text>
+            <text x="66" y="58" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="8.5" fill="#64748B" letter-spacing="1.5">PLANEJE • CALCULE • ORCE</text>
+          </svg>
+        </div>
+        
+        <form id="loginForm">
+          <div class="form-group">
+            <label>E-mail Corporativo / Profissional</label>
+            <input type="email" id="loginEmail" class="form-control" value="engenharia@orceiobras.com" required>
+          </div>
+          <div class="form-group">
+            <label>Senha de Acesso</label>
+            <input type="password" id="loginPass" class="form-control" value="123456" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; margin-top: 1rem;">Acessar Plataforma</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- APLICAÇÃO -->
+  <div id="system-app" class="sub-page">
+    
+    <!-- BARRA MOBILE -->
+    <div class="mobile-header">
+      <svg class="brand-logo-svg" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg" style="max-width:140px;">
+        <rect x="5" y="15" width="48" height="48" rx="10" fill="url(#logoGlow)"/>
+        <path d="M29 23 L41 35 L29 47 L17 35 Z" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="29" cy="35" r="3" fill="#FFFFFF"/>
+        <text x="64" y="44" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="30" fill="#FFFFFF" letter-spacing="-1">Orcei<tspan fill="#FF5500">Obras</tspan></text>
+      </svg>
+      <button class="btn-toggle-sidebar" onclick="toggleMobileSidebar()">☰</button>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+    <div class="app-layout">
+      <aside class="sidebar" id="appSidebar">
+        <div class="sidebar-header">
+          <svg class="brand-logo-svg" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="15" width="48" height="48" rx="10" fill="url(#logoGlow)"/>
+            <path d="M29 23 L41 35 L29 47 L17 35 Z" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+            <circle cx="29" cy="35" r="3" fill="#FFFFFF"/>
+            <text x="64" y="44" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="30" fill="#FFFFFF" letter-spacing="-1">Orcei<tspan fill="#FF5500">Obras</tspan></text>
+            <text x="66" y="58" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="8.5" fill="#94A3B8" letter-spacing="1.5">PLANEJE • CALCULE • ORCE</text>
+          </svg>
+        </div>
+        
+        <nav>
+          <a href="#" id="link-lojas-feed" onclick="navToPage('page-lojas-feed')">🏬 Lojas (Vitrine)</a>
+          <a href="#" id="link-create-store" onclick="navToPage('page-create-store')">➕ Criar Minha Loja</a>
+          <a href="#" id="link-my-stores" onclick="navToPage('page-my-stores')">⚙️ Minhas Lojas</a>
+          <a href="#" id="link-calc-quick" onclick="navToPage('page-calc-quick')">⚡ Calculadora Rápida</a>
+          <a href="#" id="link-calc-hardware" onclick="navToPage('page-calc-hardware')">🧮 Calculadora Avançada</a>
+        </nav>
+
+        <div class="user-info">
+          <div id="usrName" style="font-weight: 700; color: white;">Usuário Conectado</div>
+          <a href="#" onclick="logout()" style="color: #F87171; text-decoration: none; display: inline-block; margin-top: 8px; font-weight: 600;">🚪 Desconectar</a>
+        </div>
+      </aside>
+
+      <main class="main-viewport">
+
+        <!-- VITRINE DE LOJAS -->
+        <div id="page-lojas-feed" class="sub-page active">
+          <div class="page-header">
+            <h2>Lojas & Fornecedores Cadastrados</h2>
+            <input type="text" id="searchStore" class="form-control" placeholder="Buscar fornecedor ou material..." style="width: 300px;" oninput="renderStoresFeed()">
+          </div>
+          <div class="grid-cards" id="storesFeedGrid"></div>
+        </div>
+
+        <!-- CALCULADORA RÁPIDA -->
+        <div id="page-calc-quick" class="sub-page">
+          <div class="page-header">
+            <h2>⚡ Calculadora Rápida de Insumos</h2>
+          </div>
+
+          <div class="quick-calc-grid">
+            <!-- CONTROLES -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+              <div class="quick-calc-card">
+                <h3 style="margin-bottom: 1.25rem; font-size: 1.1rem; color: var(--brand-navy);">Parâmetros da Construção</h3>
+                
+                <div class="form-group">
+                  <label>Tipo de Serviço / Estrutura</label>
+                  <select id="qcType" class="form-control" onchange="runQuickCalc()">
+                    <option value="tijolos">Alvenaria (Tijolos Baianos)</option>
+                    <option value="concreto">Concreto Estrutural / Laje / Piso</option>
+                    <option value="reboco">Reboco / Emboço Especial</option>
+                    <option value="piso">Contrapiso Regularizado</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Dimensionamento</label>
+                  <select id="qcCalcMode" class="form-control" onchange="toggleQuickInputs()">
+                    <option value="dims">Informar Comprimento × Altura</option>
+                    <option value="direct">Informar Medida Total Direta (m² / m³)</option>
+                  </select>
+                </div>
+
+                <div id="qcDimsGroup">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                      <label>Comprimento (m)</label>
+                      <input type="number" id="qcLength" class="form-control" value="5.0" step="0.1" oninput="runQuickCalc()">
+                    </div>
+                    <div class="form-group">
+                      <label id="qcHeightLabel">Altura (m)</label>
+                      <input type="number" id="qcHeight" class="form-control" value="2.8" step="0.1" oninput="runQuickCalc()">
+                    </div>
+                  </div>
+                </div>
+
+                <div id="qcDirectGroup" style="display: none;">
+                  <div class="form-group">
+                    <label id="qcLabelVal">Área Total (m²)</label>
+                    <input type="number" id="qcVal" class="form-control" value="14.0" min="1" oninput="runQuickCalc()">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Margem de Perda (%)</label>
+                  <input type="number" id="qcWaste" class="form-control" value="10" min="0" max="50" step="1" oninput="runQuickCalc()">
+                </div>
+
+                <div style="background: var(--bg-body); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
+                    <span>MEDIDA CALCULADA:</span>
+                    <span id="qcCalculatedArea" style="color: var(--brand-orange); font-weight: 800; font-size: 1rem;">14.00 m²</span>
+                  </div>
+                  <div id="qcSummary" style="font-size: 1.25rem; font-weight: 800; color: var(--brand-navy); margin-top: 6px;">0 Insumos</div>
+                  <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <span class="badge-margin" id="qcWasteLabel">Margem de 10% aplicada</span>
+                    <strong style="color: var(--brand-orange); font-size: 1.1rem;" id="qcTotalPrice">R$ 0,00</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MATERIAIS ADICIONAIS -->
+              <div class="quick-calc-card" style="border-top: 4px solid var(--brand-orange);">
+                <h4 style="margin-bottom: 1rem; font-size: 1rem; color: var(--brand-navy);">➕ Inserir Material Extra (Empreiteiro)</h4>
+                <div class="form-group" style="margin-bottom: 0.6rem;">
+                  <input type="text" id="qcCustomName" class="form-control" placeholder="Descrição do Material">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 0.8rem;">
+                  <input type="number" id="qcCustomQty" class="form-control" placeholder="Qtd. Base" step="0.1">
+                  <input type="text" id="qcCustomUnit" class="form-control" placeholder="Unid (Kg)">
+                  <input type="number" id="qcCustomPrice" class="form-control" placeholder="R$ Unit." step="0.01">
+                </div>
+                <button type="button" class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="addQuickCustomMaterial()">+ Adicionar Insumo Extra</button>
+              </div>
+            </div>
+
+            <!-- RESULTADOS -->
+            <div class="quick-calc-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px;">
+                <h3 style="font-size: 1.15rem; color: var(--brand-navy);">Lista Quantitativa e Orçamento</h3>
+                <span class="badge-margin">Quantidades Finais</span>
+              </div>
+              
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Material / Insumo</th>
+                      <th>Qtd. Recomendada</th>
+                      <th>Unidade</th>
+                      <th>R$ Unit.</th>
+                      <th>Subtotal</th>
+                      <th>Origem</th>
+                      <th>Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="qcResultTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORMULÁRIO DE LOJA -->
+        <div id="page-create-store" class="sub-page">
+          <div class="page-header">
+            <h2>Cadastrar Nova Loja / Depósito</h2>
+          </div>
+          
+          <div style="background: white; padding: 2.5rem 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); max-width: 720px; box-shadow: var(--shadow-sm);">
+            <form id="createStoreForm" onsubmit="handleCreateStore(event)">
+              <div class="form-group">
+                <label>Nome Comercial da Empresa</label>
+                <input type="text" id="newStoreName" class="form-control" placeholder="Ex: Comercial Guareí Materiais" required>
+              </div>
+              <div class="form-group">
+                <label>Telefone / WhatsApp Comercial</label>
+                <input type="text" id="newStorePhone" class="form-control" placeholder="(15) 99999-9999" required>
+              </div>
+              <div class="form-group">
+                <label>Descrição dos Serviços e Logística</label>
+                <input type="text" id="newStoreDesc" class="form-control" placeholder="Atendemos toda a região com frota própria de caminhões." required>
+              </div>
+              <div class="form-group">
+                <label>URL da Logomarca (Imagem)</label>
+                <input type="url" id="newStoreAvatar" class="form-control" placeholder="https://..." required>
+              </div>
+              <div class="form-group">
+                <label>URL do Banner Principal</label>
+                <input type="url" id="newStoreBanner" class="form-control" placeholder="https://..." required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem;">Publicar Estabelecimento</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- GERENCIAMENTO -->
+        <div id="page-my-stores" class="sub-page">
+          <div class="page-header">
+            <h2>Minhas Lojas Cadastradas</h2>
+          </div>
+          <div id="myStoresList" class="grid-cards"></div>
+        </div>
+
+        <!-- VISUALIZAÇÃO PÚBLICA -->
+        <div id="page-loja-view" class="sub-page">
+          <button class="btn btn-outline" style="margin-bottom: 1.5rem;" onclick="navToPage('page-lojas-feed')">← Voltar à Vitrine</button>
+          
+          <div class="store-banner" id="viewStoreBanner">
+            <img id="viewStoreAvatar" class="store-avatar" src="" alt="Logo">
+          </div>
+          
+          <div class="store-header-info" style="margin-bottom: 2.5rem;">
+            <h1 id="viewStoreName" style="font-size: 2rem; color: var(--brand-navy);">Nome da Loja</h1>
+            <p id="viewStoreDesc" style="color: var(--text-muted); font-size: 1rem; margin-top: 4px;"></p>
+            <p id="viewStoreContact" style="color: var(--brand-orange); font-weight: 700; font-size: 0.95rem; margin-top: 6px;"></p>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 8px;">
+            <h3 style="font-size: 1.3rem; color: var(--brand-navy);">Catálogo de Insumos & Produtos</h3>
+            <button id="btnAddProduct" class="btn btn-primary" style="display: none;" onclick="openAddProductModal()">+ Adicionar Material</button>
+          </div>
+
+          <div class="grid-cards" id="viewStoreProductsGrid"></div>
+        </div>
+
+        <!-- CALCULADORA AVANÇADA DE ENGENHARIA -->
+        <div id="page-calc-hardware" class="sub-page">
+          <div class="page-header">
+            <h2>Calculadora Físico-Quantitativa de Engenharia</h2>
+          </div>
+
+          <div class="calculator-device">
+            <div class="calc-screen">
+              <div class="calc-screen-header">
+                <span>ORCEIOBRAS ENGIN-PRO v2.4</span>
+                <span id="calcModeDisplay">MODO: ALVENARIA</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                  <div style="font-size: 0.8rem; opacity: 0.7; font-weight: 700;">ÁREA CALCULADA</div>
+                  <div style="font-size: 2.2rem; font-weight: bold; color: white;" id="screenPrimaryReadout">0.00 m²</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 0.8rem; opacity: 0.7; font-weight: 700;">CUSTO ESTIMADO TOTAL</div>
+                  <div style="font-size: 1.8rem; color: var(--calc-neon-green);" id="screenSecondaryReadout">R$ 0,00</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="calc-controls">
+              <div class="form-group" style="margin:0;">
+                <label>Serviço de Engenharia</label>
+                <select id="hwType" class="form-control" onchange="updateHardwareCalc()">
+                  <option value="alvenaria">Alvenaria (Blocos + Argamassa)</option>
+                  <option value="concreto">Concreto Estrutural (Fck 25MPa)</option>
+                  <option value="reboco">Reboco / Emboço Especial</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label>Comprimento Total (m)</label>
+                <input type="number" id="hwLen" class="form-control" value="10.0" step="0.5" oninput="updateHardwareCalc()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label>Altura / Pé-Direito (m)</label>
+                <input type="number" id="hwHeight" class="form-control" value="2.8" step="0.1" oninput="updateHardwareCalc()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label>Margem de Sobra / Perda (%)</label>
+                <input type="number" id="hwWaste" class="form-control" value="10" step="1" oninput="updateHardwareCalc()">
+              </div>
+            </div>
+
+            <!-- ADICIONAR INSUMO CUSTOMIZADO -->
+            <div style="background: rgba(255,255,255,0.04); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.08);">
+              <h4 style="color: white; font-size: 0.95rem; margin-bottom: 0.8rem;">🔧 Inserir Insumos Personalizados (Empreiteiro)</h4>
+              <div class="hw-custom-inputs">
+                <input type="text" id="hwCustomName" class="form-control" placeholder="Nome do Material (ex: Treliça TR12643)">
+                <input type="text" id="hwCustomSpec" class="form-control" placeholder="Especificação (ex: 6m Aço CA-60)">
+                <input type="number" id="hwCustomQty" class="form-control" placeholder="Qtd Base" step="0.1">
+                <input type="text" id="hwCustomUnit" class="form-control" placeholder="Unid. (m, kg)">
+                <input type="number" id="hwCustomPrice" class="form-control" placeholder="R$ Unit." step="0.01">
+                <button type="button" class="btn btn-primary" onclick="addHardwareCustomMaterial()">+ Adicionar</button>
+              </div>
+            </div>
+
+            <div style="background: white; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
+                <h4 style="color: var(--brand-navy); font-size: 1.1rem;">Lista Físico-Quantitativa & Orçamento Final:</h4>
+                <span class="badge-margin" id="hwWasteBadge">Com +10% de sobra</span>
+              </div>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Insumo</th>
+                      <th>Especificação</th>
+                      <th>Qtd Final</th>
+                      <th>Unidade</th>
+                      <th>R$ Unit.</th>
+                      <th>Subtotal</th>
+                      <th>Origem</th>
+                      <th>Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="hwResultsTable"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="calc-keypad">
+              <button class="calc-btn" onclick="quickPreset(5, 2.8)">5.0 × 2.8m</button>
+              <button class="calc-btn" onclick="quickPreset(10, 2.8)">10.0 × 2.8m</button>
+              <button class="calc-btn" onclick="quickPreset(20, 3.0)">20.0 × 3.0m</button>
+              <button class="calc-btn action" onclick="alert('Relatório de Insumos exportado e salvo!')">Salvar Lista</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const DB_KEYS = {
+      STORES: 'orceiobras_v10_stores',
+      PRODUCTS: 'orceiobras_v10_products'
+    };
+
+    let currentUser = { email: 'engenharia@orceiobras.com' };
+    let currentActiveStoreId = null;
+
+    let quickCustomMaterials = [];
+    let hardwareCustomMaterials = [];
+
+    let customPrices = {}; 
+
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('appSidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+
+    function initDatabase() {
+      if (!localStorage.getItem(DB_KEYS.STORES)) {
+        const stores = [
+          {
+            id: 'loja_1',
+            ownerEmail: 'engenharia@orceiobras.com',
+            name: 'ConstruCentral Depósito',
+            phone: '(15) 98765-4321',
+            desc: 'Agregados, cimentos, tijolos e estrutura pesada com frota própria de entrega.',
+            avatar: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=200&auto=format&fit=crop&q=60',
+            banner: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1000&auto=format&fit=crop&q=60'
+          }
+        ];
+        localStorage.setItem(DB_KEYS.STORES, JSON.stringify(stores));
+      }
+
+      if (!localStorage.getItem(DB_KEYS.PRODUCTS)) {
+        const products = [
+          { id: '1', storeId: 'loja_1', name: 'Tijolos Baianos 6 Furos', price: 1.20, category: 'Alvenaria', unit: 'Unidades' },
+          { id: '2', storeId: 'loja_1', name: 'Tijolo Baiano (6 Furos)', price: 1.20, category: 'Alvenaria', unit: 'Unidades' },
+          { id: '3', storeId: 'loja_1', name: 'Cimento CP-II (50kg)', price: 34.90, category: 'Aglomerantes', unit: 'Sacos' },
+          { id: '4', storeId: 'loja_1', name: 'Cimento CP-II-E (50kg)', price: 34.90, category: 'Aglomerantes', unit: 'Sacos' },
+          { id: '5', storeId: 'loja_1', name: 'Areia Média Lavada', price: 110.00, category: 'Agregados', unit: 'm³' },
+          { id: '6', storeId: 'loja_1', name: 'Brita 0 / Pedrisco', price: 125.00, category: 'Agregados', unit: 'm³' }
+        ];
+        localStorage.setItem(DB_KEYS.PRODUCTS, JSON.stringify(products));
+      }
+    }
+
+    const DB = {
+      get: (key) => JSON.parse(localStorage.getItem(key)) || [],
+      set: (key, data) => localStorage.setItem(key, JSON.stringify(data))
+    };
+
+    function findStoreProduct(materialName) {
+      const products = DB.get(DB_KEYS.PRODUCTS);
+      const stores = DB.get(DB_KEYS.STORES);
+
+      const foundProduct = products.find(p => p.name.toLowerCase().trim() === materialName.toLowerCase().trim());
+      if (foundProduct) {
+        const store = stores.find(s => s.id === foundProduct.storeId);
+        return {
+          price: foundProduct.price || 0,
+          storeName: store ? store.name : 'Loja Cadastrada'
+        };
+      }
+      return null;
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      currentUser.email = document.getElementById('loginEmail').value;
+      startSystem();
+    });
+
+    function logout() {
+      document.getElementById('system-app').classList.remove('active');
+      document.getElementById('view-login').classList.add('active');
+    }
+
+    function startSystem() {
+      document.getElementById('view-login').classList.remove('active');
+      document.getElementById('system-app').classList.add('active');
+      document.getElementById('usrName').innerText = currentUser.email;
+      navToPage('page-lojas-feed');
+    }
+
+    function navToPage(pageId) {
+      document.querySelectorAll('.main-viewport .sub-page').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sidebar nav a').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(pageId).classList.add('active');
+      const activeLink = document.getElementById('link-' + pageId.replace('page-', ''));
+      if (activeLink) activeLink.classList.add('active');
+
+      const sidebar = document.getElementById('appSidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      }
+
+      if (pageId === 'page-lojas-feed') renderStoresFeed();
+      if (pageId === 'page-my-stores') renderMyStores();
+      if (pageId === 'page-calc-quick') runQuickCalc();
+      if (pageId === 'page-calc-hardware') updateHardwareCalc();
+    }
+
+    function toggleQuickInputs() {
+      const mode = document.getElementById('qcCalcMode').value;
+      document.getElementById('qcDimsGroup').style.display = (mode === 'dims') ? 'block' : 'none';
+      document.getElementById('qcDirectGroup').style.display = (mode === 'direct') ? 'block' : 'none';
+      runQuickCalc();
+    }
+
+    function updateCustomPrice(materialKey, value) {
+      customPrices[materialKey] = parseFloat(value) || 0;
+      if (document.getElementById('page-calc-quick').classList.contains('active')) runQuickCalc();
+      if (document.getElementById('page-calc-hardware').classList.contains('active')) updateHardwareCalc();
+    }
+
+    function addQuickCustomMaterial() {
+      const name = document.getElementById('qcCustomName').value.trim();
+      const qty = parseFloat(document.getElementById('qcCustomQty').value);
+      const unit = document.getElementById('qcCustomUnit').value.trim();
+      const price = parseFloat(document.getElementById('qcCustomPrice').value) || 0;
+
+      if (!name || isNaN(qty) || !unit) {
+        alert('Informe a descrição, quantidade base e unidade do material extra.');
+        return;
+      }
+
+      const id = Date.now();
+      quickCustomMaterials.push({ id, name, baseQty: qty, unit, initialPrice: price });
+      if (price > 0) customPrices['qc_custom_' + id] = price;
+
+      document.getElementById('qcCustomName').value = '';
+      document.getElementById('qcCustomQty').value = '';
+      document.getElementById('qcCustomUnit').value = '';
+      document.getElementById('qcCustomPrice').value = '';
+      runQuickCalc();
+    }
+
+    function removeQuickCustomMaterial(id) {
+      quickCustomMaterials = quickCustomMaterials.filter(m => m.id !== id);
+      delete customPrices['qc_custom_' + id];
+      runQuickCalc();
+    }
+
+    function runQuickCalc() {
+      const type = document.getElementById('qcType').value;
+      const mode = document.getElementById('qcCalcMode').value;
+      const wastePercent = parseFloat(document.getElementById('qcWaste').value) || 0;
+      const wasteFactor = 1 + (wastePercent / 100);
+      
+      document.getElementById('qcWasteLabel').innerText = `Margem de ${wastePercent}% aplicada`;
+
+      let totalArea = 0;
+      if (mode === 'dims') {
+        const len = parseFloat(document.getElementById('qcLength').value) || 0;
+        const height = parseFloat(document.getElementById('qcHeight').value) || 0;
+        totalArea = len * height;
+      } else {
+        totalArea = parseFloat(document.getElementById('qcVal').value) || 0;
+      }
+
+      const isVolume = (type === 'concreto');
+      document.getElementById('qcCalculatedArea').innerText = `${totalArea.toFixed(2)} ${isVolume ? 'm³' : 'm²'}`;
+
+      let baseItems = [];
+
+      if (type === 'tijolos') {
+        const totalTijolos = Math.ceil(totalArea * 25 * wasteFactor);
+        const sacosCimento = Math.ceil(totalArea * 0.15 * wasteFactor);
+        baseItems = [
+          { key: 'tijolos', name: 'Tijolos Baianos 6 Furos', qty: totalTijolos, unit: 'Unidades', isCustom: false },
+          { key: 'cimento', name: 'Cimento CP-II (50kg)', qty: sacosCimento, unit: 'Sacos', isCustom: false },
+          { key: 'areia', name: 'Areia Média Lavada', qty: (totalArea * 0.04 * wasteFactor).toFixed(2), unit: 'm³', isCustom: false }
+        ];
+        document.getElementById('qcSummary').innerText = `${totalTijolos} Tijolos recomendados`;
+      } else if (type === 'concreto') {
+        const sacos = Math.ceil(totalArea * 7 * wasteFactor);
+        baseItems = [
+          { key: 'cimento', name: 'Cimento CP-II (50kg)', qty: sacos, unit: 'Sacos', isCustom: false },
+          { key: 'areia', name: 'Areia Média Lavada', qty: (totalArea * 0.65 * wasteFactor).toFixed(2), unit: 'm³', isCustom: false },
+          { key: 'brita', name: 'Brita 0 / Pedrisco', qty: (totalArea * 0.8 * wasteFactor).toFixed(2), unit: 'm³', isCustom: false }
+        ];
+        document.getElementById('qcSummary').innerText = `${sacos} Sacos de Cimento`;
+      } else if (type === 'reboco') {
+        const sacos = Math.ceil(totalArea * 0.18 * wasteFactor);
+        baseItems = [
+          { key: 'cimento', name: 'Cimento CP-II (50kg)', qty: sacos, unit: 'Sacos', isCustom: false },
+          { key: 'cal', name: 'Cal Hidratada CH-III (20kg)', qty: Math.ceil(totalArea * 0.1 * wasteFactor), unit: 'Sacos', isCustom: false },
+          { key: 'areia', name: 'Areia Fina Peneirada', qty: (totalArea * 0.025 * wasteFactor).toFixed(2), unit: 'm³', isCustom: false }
+        ];
+        document.getElementById('qcSummary').innerText = `${sacos} Sacos de Cimento`;
+      } else if (type === 'piso') {
+        const sacos = Math.ceil(totalArea * 0.2 * wasteFactor);
+        baseItems = [
+          { key: 'cimento', name: 'Cimento CP-II (50kg)', qty: sacos, unit: 'Sacos', isCustom: false },
+          { key: 'areia', name: 'Areia Média Lavada', qty: (totalArea * 0.03 * wasteFactor).toFixed(2), unit: 'm³', isCustom: false }
+        ];
+        document.getElementById('qcSummary').innerText = `${sacos} Sacos de Cimento`;
+      }
+
+      let grandTotal = 0;
+
+      const fullItems = baseItems.map(item => {
+        const storeData = findStoreProduct(item.name);
+        let unitPrice = customPrices[item.key] !== undefined ? customPrices[item.key] : (storeData ? storeData.price : 0);
+        let originText = storeData ? `<span class="badge-store">${storeData.storeName}</span>` : '<span style="color:#94A3B8; font-size:0.75rem;">Manual</span>';
+        
+        const subtotal = parseFloat(item.qty) * unitPrice;
+        grandTotal += subtotal;
+
+        return { ...item, unitPrice, subtotal, originText };
+      });
+
+      quickCustomMaterials.forEach(cm => {
+        const key = 'qc_custom_' + cm.id;
+        const qty = parseFloat((cm.baseQty * wasteFactor).toFixed(2));
+        const unitPrice = customPrices[key] !== undefined ? customPrices[key] : (cm.initialPrice || 0);
+        const subtotal = qty * unitPrice;
+        grandTotal += subtotal;
+
+        fullItems.push({
+          id: cm.id,
+          key: key,
+          name: cm.name,
+          qty: qty,
+          unit: cm.unit,
+          isCustom: true,
+          unitPrice: unitPrice,
+          subtotal: subtotal,
+          originText: '<span class="badge-custom">Empreiteiro</span>'
+        });
+      });
+
+      document.getElementById('qcTotalPrice').innerText = `R$ ${grandTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+      document.getElementById('qcResultTable').innerHTML = fullItems.map(i => `
+        <tr>
+          <td>
+            <strong>${i.name}</strong>
+          </td>
+          <td>
+            <strong style="color: var(--brand-orange); font-size: 1rem;">${i.qty}</strong>
+          </td>
+          <td>${i.unit}</td>
+          <td>
+            <input type="number" class="input-price" value="${i.unitPrice}" step="0.01" oninput="updateCustomPrice('${i.key}', this.value)">
+          </td>
+          <td>
+            <strong>R$ ${i.subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+          </td>
+          <td>${i.originText}</td>
+          <td>${i.isCustom ? `<button class="btn-remove" onclick="removeQuickCustomMaterial(${i.id})">Remover</button>` : '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderStoresFeed() {
+      const query = document.getElementById('searchStore').value.toLowerCase();
+      const stores = DB.get(DB_KEYS.STORES);
+      const filtered = stores.filter(s => s.name.toLowerCase().includes(query) || s.desc.toLowerCase().includes(query));
+
+      document.getElementById('storesFeedGrid').innerHTML = filtered.map(s => `
+        <div class="card-item" onclick="openStoreView('${s.id}')">
+          <img src="${s.banner}" alt="Banner">
+          <div class="card-item-body">
+            <div style="display:flex; align-items:center; gap:12px; margin-top:-35px; margin-bottom:12px;">
+              <img src="${s.avatar}" style="width:55px; height:55px; border-radius:50%; border:3px solid white; object-fit:cover; box-shadow:var(--shadow-sm);">
+              <div>
+                <h4 style="font-size:1.05rem; color:var(--brand-navy); font-weight:800;">${s.name}</h4>
+                <span style="font-size:0.85rem; color:var(--brand-orange); font-weight:700;">${s.phone}</span>
+              </div>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">${s.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function handleCreateStore(e) {
+      e.preventDefault();
+      const stores = DB.get(DB_KEYS.STORES);
+      
+      const newStore = {
+        id: 'loja_' + Date.now(),
+        ownerEmail: currentUser.email,
+        name: document.getElementById('newStoreName').value,
+        phone: document.getElementById('newStorePhone').value,
+        desc: document.getElementById('newStoreDesc').value,
+        avatar: document.getElementById('newStoreAvatar').value,
+        banner: document.getElementById('newStoreBanner').value
+      };
+
+      stores.push(newStore);
+      DB.set(DB_KEYS.STORES, stores);
+      
+      document.getElementById('createStoreForm').reset();
+      alert('Loja cadastrada com sucesso!');
+      openStoreView(newStore.id);
+    }
+
+    function renderMyStores() {
+      const stores = DB.get(DB_KEYS.STORES).filter(s => s.ownerEmail === currentUser.email);
+      const container = document.getElementById('myStoresList');
+
+      if (stores.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);">Você ainda não cadastrou nenhuma loja.</p>';
+        return;
+      }
+
+      container.innerHTML = stores.map(s => `
+        <div class="card-item" onclick="openStoreView('${s.id}')">
+          <img src="${s.banner}" alt="Banner">
+          <div class="card-item-body">
+            <h4 style="font-size:1.1rem; color:var(--brand-navy);">${s.name}</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">${s.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openStoreView(storeId) {
+      currentActiveStoreId = storeId;
+      const store = DB.get(DB_KEYS.STORES).find(s => s.id === storeId);
+      if (!store) return;
+
+      document.getElementById('viewStoreBanner').style.backgroundImage = `url('${store.banner}')`;
+      document.getElementById('viewStoreAvatar').src = store.avatar;
+      document.getElementById('viewStoreName').innerText = store.name;
+      document.getElementById('viewStoreDesc').innerText = store.desc;
+      document.getElementById('viewStoreContact').innerText = `📱 Contato: ${store.phone}`;
+
+      const isOwner = store.ownerEmail === currentUser.email;
+      document.getElementById('btnAddProduct').style.display = isOwner ? 'inline-flex' : 'none';
+
+      renderStoreProducts(storeId);
+      navToPage('page-loja-view');
+    }
+
+    function renderStoreProducts(storeId) {
+      const products = DB.get(DB_KEYS.PRODUCTS).filter(p => p.storeId === storeId);
+      document.getElementById('viewStoreProductsGrid').innerHTML = products.map(p => `
+        <div class="card-item" style="cursor:default;">
+          <div class="card-item-body">
+            <span style="font-size:0.75rem; background:#E0F2FE; color:#0284C7; padding:0.25rem 0.6rem; border-radius:20px; font-weight:800;">${p.category}</span>
+            <h4 style="margin-top:0.75rem; font-size:1.1rem; color:var(--brand-navy);">${p.name}</h4>
+            <p style="color:var(--brand-orange); font-size:1.1rem; font-weight:800; margin-top:4px;">R$ ${(p.price || 0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">Unidade de Fornecimento: <strong>${p.unit}</strong></p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openAddProductModal() {
+      const name = prompt("Nome do Material / Produto:");
+      if (!name) return;
+      const price = parseFloat(prompt("Preço Unitário (R$):", "10.00")) || 0;
+      const category = prompt("Categoria (ex: Alvenaria, Aço, Aglomerantes):", "Alvenaria");
+      const unit = prompt("Unidade de medida (ex: m³, Saco, Milheiro):", "Saco");
+
+      const products = DB.get(DB_KEYS.PRODUCTS);
+      products.push({ id: Date.now().toString(), storeId: currentActiveStoreId, name, price, category, unit });
+      DB.set(DB_KEYS.PRODUCTS, products);
+      renderStoreProducts(currentActiveStoreId);
+    }
+
+    function addHardwareCustomMaterial() {
+      const name = document.getElementById('hwCustomName').value.trim();
+      const spec = document.getElementById('hwCustomSpec').value.trim() || 'Customizado';
+      const qty = parseFloat(document.getElementById('hwCustomQty').value);
+      const unit = document.getElementById('hwCustomUnit').value.trim();
+      const price = parseFloat(document.getElementById('hwCustomPrice').value) || 0;
+
+      if (!name || isNaN(qty) || !unit) {
+        alert('Informe a descrição, quantidade base e unidade do material.');
+        return;
+      }
+
+      const id = Date.now();
+      hardwareCustomMaterials.push({ id, name, spec, baseQty: qty, unit, initialPrice: price });
+      if (price > 0) customPrices['hw_custom_' + id] = price;
+
+      document.getElementById('hwCustomName').value = '';
+      document.getElementById('hwCustomSpec').value = '';
+      document.getElementById('hwCustomQty').value = '';
+      document.getElementById('hwCustomUnit').value = '';
+      document.getElementById('hwCustomPrice').value = '';
+      updateHardwareCalc();
+    }
+
+    function removeHardwareCustomMaterial(id) {
+      hardwareCustomMaterials = hardwareCustomMaterials.filter(m => m.id !== id);
+      delete customPrices['hw_custom_' + id];
+      updateHardwareCalc();
+    }
+
+    function updateHardwareCalc() {
+      const type = document.getElementById('hwType').value;
+      const len = parseFloat(document.getElementById('hwLen').value) || 0;
+      const height = parseFloat(document.getElementById('hwHeight').value) || 0;
+      const wastePercent = parseFloat(document.getElementById('hwWaste').value) || 0;
+      const waste = wastePercent / 100;
+
+      const area = len * height;
+
+      document.getElementById('hwWasteBadge').innerText = `Com +${wastePercent}% de sobra`;
+      document.getElementById('calcModeDisplay').innerText = `MODO: ${type.toUpperCase()}`;
+      document.getElementById('screenPrimaryReadout').innerText = `${area.toFixed(2)} m²`;
+
+      let baseItems = [];
+      if (type === 'alvenaria') {
+        baseItems = [
+          { key: 'tijolo_hw', name: 'Tijolo Baiano (6 Furos)', spec: '9x14x19 cm', qty: Math.ceil((area * 25) * (1 + waste)), unit: 'Unidades', isCustom: false },
+          { key: 'cimento_hw', name: 'Cimento CP-II-E (50kg)', spec: 'Argamassa Assentamento', qty: Math.ceil((area * 0.15) * (1 + waste)), unit: 'Sacos', isCustom: false },
+          { key: 'areia_hw', name: 'Areia Média Lavada', spec: 'Argamassa', qty: ((area * 0.04) * (1 + waste)).toFixed(2), unit: 'm³', isCustom: false }
+        ];
+      } else if (type === 'concreto') {
+        const vol = area * 0.14;
+        baseItems = [
+          { key: 'cimento_hw', name: 'Cimento CP-II-E (50kg)', spec: 'Estrutural 25MPa', qty: Math.ceil((vol * 7) * (1 + waste)), unit: 'Sacos', isCustom: false },
+          { key: 'areia_hw', name: 'Areia Média Lavada', spec: 'Agregado Miúdo', qty: ((vol * 0.65) * (1 + waste)).toFixed(2), unit: 'm³', isCustom: false },
+          { key: 'brita_hw', name: 'Brita 0 / Pedrisco', spec: 'Agregado Graúdo', qty: ((vol * 0.8) * (1 + waste)).toFixed(2), unit: 'm³', isCustom: false }
+        ];
+      } else if (type === 'reboco') {
+        baseItems = [
+          { key: 'cimento_hw', name: 'Cimento CP-II-E (50kg)', spec: 'Reboco Técnico', qty: Math.ceil((area * 0.2) * (1 + waste)), unit: 'Sacos', isCustom: false },
+          { key: 'areia_hw', name: 'Areia Média Lavada', spec: 'Acabamento', qty: ((area * 0.03) * (1 + waste)).toFixed(2), unit: 'm³', isCustom: false }
+        ];
+      }
+
+      let grandTotal = 0;
+
+      const fullItems = baseItems.map(item => {
+        const storeData = findStoreProduct(item.name);
+        let unitPrice = customPrices[item.key] !== undefined ? customPrices[item.key] : (storeData ? storeData.price : 0);
+        let originText = storeData ? `<span class="badge-store">${storeData.storeName}</span>` : '<span style="color:#94A3B8; font-size:0.75rem;">Manual</span>';
+        
+        const subtotal = parseFloat(item.qty) * unitPrice;
+        grandTotal += subtotal;
+
+        return { ...item, unitPrice, subtotal, originText };
+      });
+
+      hardwareCustomMaterials.forEach(hm => {
+        const key = 'hw_custom_' + hm.id;
+        const qty = parseFloat((hm.baseQty * (1 + waste)).toFixed(2));
+        const unitPrice = customPrices[key] !== undefined ? customPrices[key] : (hm.initialPrice || 0);
+        const subtotal = qty * unitPrice;
+        grandTotal += subtotal;
+
+        fullItems.push({
+          id: hm.id,
+          key: key,
+          name: hm.name,
+          spec: hm.spec,
+          qty: qty,
+          unit: hm.unit,
+          isCustom: true,
+          unitPrice: unitPrice,
+          subtotal: subtotal,
+          originText: '<span class="badge-custom">Empreiteiro</span>'
+        });
+      });
+
+      document.getElementById('screenSecondaryReadout').innerText = `R$ ${grandTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+      document.getElementById('hwResultsTable').innerHTML = fullItems.map(i => `
+        <tr>
+          <td>
+            <strong>${i.name}</strong>
+          </td>
+          <td>${i.spec}</td>
+          <td>
+            <strong style="color:var(--brand-orange); font-size:1rem;">${i.qty}</strong>
+          </td>
+          <td>${i.unit}</td>
+          <td>
+            <input type="number" class="input-price" value="${i.unitPrice}" step="0.01" oninput="updateCustomPrice('${i.key}', this.value)">
+          </td>
+          <td>
+            <strong>R$ ${i.subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+          </td>
+          <td>${i.originText}</td>
+          <td>${i.isCustom ? `<button class="btn-remove" onclick="removeHardwareCustomMaterial(${i.id})">Remover</button>` : '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function quickPreset(l, h) {
+      document.getElementById('hwLen').value = l;
+      document.getElementById('hwHeight').value = h;
+      updateHardwareCalc();
+    }
+
+    initDatabase();
+  </script>
+</body>
+</html>
